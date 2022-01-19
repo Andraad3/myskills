@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, TextInput, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, StyleSheet, SafeAreaView, TextInput, Platform, FlatList } from 'react-native';
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
 
 export function Home() {
     const [newSkill, setNewSkill] = useState('');
     const [mySkills, setMySkills] = useState([]);
+    const [gretting, setGretting] = useState();
 
     function handleAddNewSkill() {
         setMySkills(oldSkills => [...oldSkills, newSkill]);
     }
 
+    useEffect(() => {
+        const currentHour = new Date().getHours();
+
+        if (currentHour < 12) {
+            setGretting('Good morning');
+        }
+        else if (currentHour >= 12 && currentHour < 18) {
+            setGretting('Good afternoon');
+        } else {
+            setGretting('Good night');
+        }
+    })
+
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Welcome, Andrade</Text>
+            <Text style={styles.gretting}>{gretting}</Text>
 
             <TextInput style={styles.input} placeholder='New skill' placeholderTextColor={"#555"} onChangeText={setNewSkill} />
 
@@ -23,9 +38,13 @@ export function Home() {
                 My Skills
             </Text>
 
-            {mySkills.map(skill => (
-                <SkillCard key={skill} skill={skill} />
-            ))}
+            <FlatList
+                data={mySkills}
+                keyExtractor={item => item}
+                renderItem={({ item }) => (
+                    <SkillCard skill={item} />
+                )}
+            />
 
         </SafeAreaView>
     )
@@ -44,6 +63,11 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 24,
         fontWeight: 'bold'
+    },
+    gretting: {
+        color: '#f1f1f1',
+        fontSize: 18,
+        fontWeight: 'normal'
     },
     input: {
         backgroundColor: '#1F1e25',
